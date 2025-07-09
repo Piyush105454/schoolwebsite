@@ -59,7 +59,7 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <Navigation 
         activeSection={activeSection} 
         onSectionClick={scrollToSection}
@@ -70,77 +70,77 @@ function App() {
           id="home"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1 }}
         >
           <HeroSection onExploreClick={handleExploreClick} />
         </motion.div>
 
         <motion.div 
           id="about"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: true, margin: "-100px" }}
         >
           <AboutSection />
         </motion.div>
 
         <motion.div 
           id="academics"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 100 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: true, margin: "-100px" }}
         >
           <AcademicsSection />
         </motion.div>
 
         <motion.div 
           id="events"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, scale: 0.8, rotateX: 45 }}
+          whileInView={{ opacity: 1, scale: 1, rotateX: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          viewport={{ once: true, margin: "-100px" }}
         >
           <EventsSection />
         </motion.div>
 
         <motion.div 
           id="results"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, x: -100 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: true, margin: "-100px" }}
         >
           <ResultsSection />
         </motion.div>
 
         <motion.div 
           id="creativity"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 50, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: true, margin: "-100px" }}
         >
           <CreativitySection />
         </motion.div>
 
         <motion.div 
           id="dashboard"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, rotateY: 90 }}
+          whileInView={{ opacity: 1, rotateY: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          viewport={{ once: true, margin: "-100px" }}
         >
           <DashboardSection />
         </motion.div>
 
         <motion.div 
           id="contact"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: true, margin: "-100px" }}
         >
           <ContactSection />
         </motion.div>
