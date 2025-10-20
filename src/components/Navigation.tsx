@@ -12,7 +12,7 @@ export interface NavigationProps {
 }
 
 
-const stripePromise = loadStripe("pk_test_51RtT9ZCV00evzvTQwuCkhBsLH3tSizh9ItMsVC0JqgmfxVU4ZAyFlhxeBaa7HaZ77plrD6wmtyWTct96Mbk8n1jH00MAXGfpRh");
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -42,9 +42,14 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionClick }
   const handlePayFees = async () => {
     const stripe = await stripePromise;
 
-    const res = await fetch('http://localhost:5000/create-checkout-session', {
+    const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`;
+
+    const res = await fetch(apiUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      },
     });
 
     const session = await res.json();
@@ -60,10 +65,8 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionClick }
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const endpoint =
-      authMode === 'login'
-        ? 'http://localhost:5000/api/login'
-        : 'http://localhost:5000/api/signup';
+    const functionName = authMode === 'login' ? 'auth-login' : 'auth-signup';
+    const endpoint = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`;
 
     const payload = {
       email,
@@ -74,7 +77,10 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionClick }
     try {
       const res = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
         body: JSON.stringify(payload),
       });
 
@@ -82,19 +88,17 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionClick }
 
       if (!res.ok) throw new Error(data.message || 'Failed');
 
-      // ✅ Save token and user for persistence
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
       setIsLoggedIn(true);
       setCurrentUser(data.user);
 
-      alert(`✅ ${authMode === 'login' ? 'Login' : 'Signup'} successful`);
+      alert(`${authMode === 'login' ? 'Login' : 'Signup'} successful`);
 
-      // Close modal
       setShowAuthModal(false);
     } catch (error: any) {
-      alert(`❌ ${error.message}`);
+      alert(`Error: ${error.message}`);
     }
   };
 
@@ -103,7 +107,7 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionClick }
     setCurrentUser(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    alert('🚪 Logged out successfully');
+    alert('Logged out successfully');
   };
 
   const navItems = [
@@ -185,6 +189,18 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionClick }
                   )}
                 </motion.button>
               ))}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="lg:hidden">
+              <motion.button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="text-white p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </motion.button>
             </div>
 
             {/* Auth & Payment Buttons */}
@@ -328,6 +344,109 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionClick }
                   ? "Don't have an account? Sign up"
                   : "Already have an account? Sign in"}
               </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <motion.div
+          className="fixed inset-0 z-[99] lg:hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <div
+            className="absolute inset-0 bg-black/90 backdrop-blur-xl"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <motion.div
+            className="relative h-full w-full flex flex-col items-center justify-center space-y-6 p-8"
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {navItems.map((item, index) => (
+              <motion.button
+                key={item.id}
+                onClick={() => {
+                  onSectionClick(item.id);
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`text-2xl font-semibold transition-all duration-300 ${
+                  activeSection === item.id
+                    ? 'text-blue-400'
+                    : 'text-gray-300 hover:text-white'
+                }`}
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {item.label}
+              </motion.button>
+            ))}
+
+            <div className="pt-8 space-y-4 w-full max-w-xs">
+              {isLoggedIn ? (
+                <motion.button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-center space-x-2 px-6 py-3 text-lg font-medium text-white bg-red-500 hover:bg-red-600 rounded-full shadow-lg transition-all duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <User className="h-5 w-5" />
+                  <span>{currentUser?.fullName || 'Logout'}</span>
+                </motion.button>
+              ) : (
+                <>
+                  <motion.button
+                    onClick={() => {
+                      setAuthMode('login');
+                      setShowAuthModal(true);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center justify-center space-x-2 px-6 py-3 text-lg font-medium text-gray-300 bg-white/10 hover:bg-white/20 rounded-full border border-white/20 transition-all duration-300"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <LogIn className="h-5 w-5" />
+                    <span>Login</span>
+                  </motion.button>
+
+                  <motion.button
+                    onClick={() => {
+                      setAuthMode('signup');
+                      setShowAuthModal(true);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center justify-center space-x-2 px-6 py-3 text-lg font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-full shadow-lg transition-all duration-300"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <UserPlus className="h-5 w-5" />
+                    <span>Sign Up</span>
+                  </motion.button>
+                </>
+              )}
+
+              <motion.button
+                onClick={() => {
+                  handlePayFees();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center justify-center space-x-2 px-6 py-3 text-lg font-medium text-white bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-full shadow-lg transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <CreditCard className="h-5 w-5" />
+                <span>Pay Fees</span>
+              </motion.button>
             </div>
           </motion.div>
         </motion.div>
