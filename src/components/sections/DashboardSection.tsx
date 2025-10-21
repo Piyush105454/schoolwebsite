@@ -4,7 +4,7 @@ import { useInView } from 'react-intersection-observer';
 import { loadStripe } from '@stripe/stripe-js';
 import { User, BookOpen, Users, Settings, Calendar, Bell, Mail, FileText, CreditCard, Shield } from 'lucide-react';
 
-const stripePromise = loadStripe('pk_test_51RtT9ZCV00evzvTQwuCkhBsLH3tSizh9ItMsVC0JqgmfxVU4ZAyFlhxeBaa7HaZ77plrD6wmtyWTct96Mbk8n1jH00MAXGfpRh'); // Replace with your publishable key
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 interface IFeature {
   icon: React.ElementType;

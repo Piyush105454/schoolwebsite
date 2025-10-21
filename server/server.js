@@ -41,7 +41,7 @@ app.post("/create-checkout-session", async (req, res) => {
     console.error("Stripe error:", error.message);
     res.status(500).json({ error: "Something went wrong with Stripe Checkout" });
   }
-}); // ✅ This closing brace was missing!
+});
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)

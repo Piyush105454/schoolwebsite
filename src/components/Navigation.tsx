@@ -12,7 +12,7 @@ export interface NavigationProps {
 }
 
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
