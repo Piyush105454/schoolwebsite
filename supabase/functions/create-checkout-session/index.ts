@@ -35,6 +35,7 @@ Deno.serve(async (req: Request) => {
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
+      payment_method_types: ['card', 'upi'],
       line_items: [
         {
           price_data: {
@@ -42,7 +43,7 @@ Deno.serve(async (req: Request) => {
             product_data: {
               name: 'College Fee Payment',
             },
-            unit_amount: 50000,
+            unit_amount: 500,
           },
           quantity: 1,
         },
