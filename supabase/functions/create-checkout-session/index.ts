@@ -43,7 +43,7 @@ Deno.serve(async (req: Request) => {
             product_data: {
               name: 'College Fee Payment',
             },
-            unit_amount: 500,
+            unit_amount: 100,
           },
           quantity: 1,
         },
